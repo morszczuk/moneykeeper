@@ -1,0 +1,26 @@
+<%= form_tag '/operation_history', multipart: true do %>
+   <label for="operation_history">Upload operation History</label> <%= file_field_tag "operation_history" %>
+   <%= submit_tag "Upload operation history" %>
+<% end %>
+
+
+
+<h1>Wydatki z ostatniego miesiąca: <%= @saldo %> </h1>
+
+<h1>Typy wydatków: </h1>
+
+<% Category.all.each do |category| %>
+  <h2> <%= category.name %> <%= Operation.category_sum(category.id) %> </h2>
+<% end %>
+
+<h1> Filtry: </h1>
+<% LabelFilter.all.each do |filter| %>
+  <h2> <%= filter.label %> <%= filter.outcomes%> </h2>
+  <%= link_to "Delete", filter, method: :delete %>
+<% end %>
+<%= form_for :label_filter, url: :label_filters, method: :post  do |l_f|%>
+  <tr>
+    <td><%= l_f.text_field :label %></td>
+    <td><%= l_f.submit %></td>
+  </tr>
+<%end%>

@@ -1,0 +1,40 @@
+<table>
+  <tr>
+    <th>id</th>
+    <th>Data operacji</th>
+    <th>Kwota</th>
+    <th>Tytuł</th>
+    <th>Części płatności</th>
+  </tr>
+  <tr>
+    <%= form_for :operation do |o|%>
+      <td> <%= @operation.id %></td>
+      <td> <%= @operation.order_date %></td>
+      <td> <%= @operation.amount %> <%= @operation.currency %> </td>
+      <td> <%= @operation.description %> </td>
+      <td> Payment parts:  </td>
+    <% end %>
+  </tr>
+  <% @operation.payment_parts.each do |pp| %>
+    <tr>
+      <td/><td/><td/><td/>
+      <%= form_for(pp, url: payment_part_path(pp), method: :patch) do |pp_edit|%>
+        <td> <%= pp_edit.text_field :amount, step: 0.01 %> <%= @operation.currency %> </td>
+        <td>  <%= pp_edit.collection_select(:category_id, Category.all, :id, :name ) %> </td>
+        <td> <%= pp_edit.text_field :labels %> </td>
+        <td> <%= pp_edit.submit %> </td>
+        <td><%= link_to "Delete", operation_payment_part_path(@operation, pp), method: :delete %> </td>
+      <% end %>
+    </tr>
+  <% end %>
+  <tr/>
+  <tr>
+    <td/><td/><td/><td/>
+    <%= form_for(PaymentPart.new, url: operation_payment_parts_path(@operation), method: :post) do |pp_edit|%>
+      <td> <%= pp_edit.text_field :amount, step: 0.01 %> <%= @operation.currency %> <td/>
+      <td> <%= pp_edit.collection_select(:category_id, Category.all, :id, :name ) %>
+      <td> <%= pp_edit.text_field :labels %> <td/>
+      <td> <%= pp_edit.submit %> </td>
+    <% end %>
+  </tr>
+</table>

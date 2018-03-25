@@ -1,0 +1,17 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  exec_date: 2018-03-18 19:19:48
+  order_date: 2018-03-18 19:19:48
+  type: 
+  description: MyString
+  amount: 9.99
+  currency: MyString
+
+two:
+  exec_date: 2018-03-18 19:19:48
+  order_date: 2018-03-18 19:19:48
+  type: 
+  description: MyString
+  amount: 9.99
+  currency: MyString

@@ -1,0 +1,45 @@
+<h1>Wgranych transakcji: <%= @operations.count %> </h1>
+<%= link_to "Usuń  wszystkie operacje", :delete_all_operations %> </td>
+
+<table>
+  <tr>
+    <th>Data operacji</th>
+    <th>Kwota</th>
+    <th>Tytuł</th>
+    <th>Części płatności</th>
+  </tr>
+  <% @operations.each do |operation| %>
+    <tr>
+      <td> <%= operation.order_date %> </td>
+      <td> <%= operation.amount %> <%= operation.currency %> </td>
+      <% if operation.parts_amount_valid? %>
+      <td> <%= operation.description %> </td>
+      <% else %>
+      <td class="red"> <%= operation.description %> </td>
+      <% end %>
+      <td> Parts:</td>
+    </tr>
+    <% operation.payment_parts.each do |pp| %>
+      <tr>
+        <td/><td/><td/>
+        <%= form_for(pp, url: payment_part_path(pp), method: :patch) do |pp_edit|%>
+          <td> <%= pp_edit.text_field :amount, step: 0.01 %> <%= operation.currency %> </td>
+          <td>  <%= pp_edit.collection_select(:category_id, Category.all, :id, :name ) %> </td>
+          <td> <%= pp_edit.text_field :labels %> </td>
+          <td> <%= pp_edit.submit %> </td>
+          <td><%= link_to "Delete", operation_payment_part_path(operation, pp), method: :delete %> </td>
+        <% end %>
+      </tr>
+    <% end %>
+    <tr/>
+    <tr>
+      <td/><td/><td/>
+      <%= form_for(PaymentPart.new, url: operation_payment_parts_path(operation), method: :post) do |pp_edit|%>
+        <td> <%= pp_edit.text_field :amount, step: 0.01 %> <%= operation.currency %> <td/>
+        <td> <%= pp_edit.collection_select(:category_id, Category.all, :id, :name ) %>
+        <td> <%= pp_edit.text_field :labels %> <td/>
+        <td> <%= pp_edit.submit %> </td>
+      <% end %>
+    </tr>
+  <% end %>
+</table>

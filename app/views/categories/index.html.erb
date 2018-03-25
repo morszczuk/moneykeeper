@@ -1,0 +1,19 @@
+<h1> Ilość kategorii: <%= @categories.count %> </h1>
+<% @categories.each do |category| %>
+  <%= form_for category do |c|%>
+    <tr>
+      <td><%= category.id %></td>
+      <td><%= c.text_field :name %></td>
+      <td><%= c.submit %></td>
+      <td><%= link_to "Delete", category, method: :delete %> </td>
+    </tr>
+  <%end%>
+<% end %>
+
+<%= form_for :category do |c|%>
+  <tr>
+    <td><%= c.text_field :name %></td>
+    <td><%= c.submit %></td>
+  </tr>
+<%end%>
+
