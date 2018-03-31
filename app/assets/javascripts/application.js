@@ -15,4 +15,8 @@
 //= require react
 //= require react_ujs
 //= require components
+//= require jquery
+//= require jquery_ujs
+//= require gentelella
+//= require gentelella-custom
 //= require_tree .
