@@ -1,0 +1,86 @@
+.row.tile_count
+  .col-md-2.col-sm-4.col-xs-6.tile_stats_count
+    span.count_top
+      i.fa.fa-money
+      | This Months Spendings
+    .count.red
+      | #{Operation.current_month_sum} zł
+  .col-md-2.col-sm-4.col-xs-6.tile_stats_count
+    span.count_top
+      i.fa.fa-cutlery
+      | Food Daily Amount
+    .count 40.00 zł
+  .col-md-2.col-sm-4.col-xs-6.tile_stats_count
+    span.count_top
+      i.fa.fa-user
+      | Total transactions
+    .count
+      | #{Operation.all.count}
+.row
+  .col-md-4.col-sm-4.col-xs-12
+    .x_panel.tile.fixed_height_320
+      .x_title
+        h2
+          | Category spendings
+        /ul.nav.navbar-right.panel_toolbox
+          li
+            a.collapse-link
+              i.fa.fa-chevron-up
+          li.dropdown
+            a.dropdown-toggle[href="https://colorlib.com/polygon/gentelella/index.html#" data-toggle="dropdown" role="button" aria-expanded="false"]
+              i.fa.fa-wrench
+            ul.dropdown-menu[role="menu"]
+              li
+                a[href="https://colorlib.com/polygon/gentelella/index.html#"]
+                  | Settings 1
+              li
+                a[href="https://colorlib.com/polygon/gentelella/index.html#"]
+                  | Settings 2
+          li
+            a.close-link
+              i.fa.fa-close
+        .clearfix
+      .x_content
+        - Category.all.select { |c| Operation.category_sum(c.id) != 0 }.each do |category|
+          .widget_summary
+            .w_left.w_25
+              span
+                = category.name
+            .w_center.w_55
+              .progress
+                .progress-bar.bg-green[role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: #{Operation.category_percentage(category.id)}%;"]
+                  span.sr-only
+                    | #{Operation.category_percentage(category.id)}
+            .w_right.w_20
+              span
+                | #{Operation.category_sum(category.id)} zł
+
+          .clearfix
+        .widget_summary
+          .w_left.w_25
+          .w_center.w_55
+          .w_right.w_20
+            span.red
+              | #{Operation.current_month_sum} zł          
+
+= form_tag '/operation_history', multipart: true do
+  label for="operation_history"  Upload operation History
+  = file_field_tag "operation_history"
+  = submit_tag "Upload operation history"
+h1
+  | Wydatki z ostatniego miesiąca: #{@saldo}
+h1 Typy wydatków:
+- Category.all.each do |category|
+  h2
+    = category.name
+    = Operation.category_sum(category.id)
+h1 Filtry:
+- LabelFilter.all.each do |filter|
+  h2
+    = filter.label
+    = filter.outcomes
+  = link_to "Delete", filter, method: :delete
+= form_for :label_filter, url: :label_filters, method: :post  do |l_f|
+  tr
+    td= l_f.text_field :label
+    td= l_f.submit

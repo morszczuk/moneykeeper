@@ -31,6 +31,11 @@ class Operation < ApplicationRecord
       .inject(0) {|sum, x| sum + x}
   end
 
+  def self.category_percentage(category_id)
+    current_month_sum = Operation.current_month_sum
+    current_month_sum != 0 ? Operation.category_sum(category_id)/Operation.current_month_sum*100 : 0
+  end
+
   def parts_with_category(category_id)
     payment_parts.select {|pp| pp.category_id == category_id }
   end
@@ -38,6 +43,6 @@ class Operation < ApplicationRecord
   private
 
   def parts_amount_sum
-    payment_parts.map(&:amount).inject(0) {|sum, x| sum + x}
+    payment_parts.map(&:amount).inject(0) {|sum, x| sum + x unless x.nil?}
   end
 end
