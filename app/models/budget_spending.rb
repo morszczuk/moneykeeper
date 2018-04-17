@@ -3,7 +3,7 @@ class BudgetSpending < ApplicationRecord
 
   def amount_payed
     (Operation.current_month
-      .map(&:payment_parts) &&
+      .map(&:payment_parts) &
       PaymentPart.with_category(category.id))
       .map(&:amount)
       .inject(0) { |sum, x| sum + x }
