@@ -3,7 +3,7 @@ class OperationHistoryController < ApplicationController
     operations = OperationHistoryParser.new operation_history_params[:operation_history] if operation_history_params[:operation_history]
     operations.operations.each { |op| op.save }
     # render component: 'OperationHistory'
-    redirect_to '/', notice: "Zaimportowano #{operations.operations.count} nowych obiektów"
+    redirect_to operations_path, notice: "Zaimportowano #{operations.operations.count} nowych obiektów"
   end
 
   def new

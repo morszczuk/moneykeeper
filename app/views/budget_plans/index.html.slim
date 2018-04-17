@@ -1,0 +1,213 @@
+- @budget_plans.each do |budget_plan|
+  .row
+    .col-md-12
+      .x_panel
+        .x_title
+          h2
+            = "Plan na miesiąc #{budget_plan.month}"
+          .clearfix
+        .x_content
+          .row.tile_count
+            .col-md-3.tile_stats_count
+              span.count_top
+                / i.fa.fa-money
+                | Total Income
+              .count.blue
+                | #{budget_plan.total_income} zł
+            .col-md-3.tile_stats_count
+              span.count_top
+                | Planned Spendings
+              .count.red
+                | #{budget_plan.planned_amount} zł
+            .col-md-3.tile_stats_count
+              span.count_top
+                | Budget Planned in
+              .count.blue
+                | #{budget_plan.planned_percentage} %             
+            .col-md-3.tile_stats_count
+              span.count_top
+                | Planned Saving
+              .count.green
+                | #{budget_plan.planned_saving} zł
+          .col-md-12 
+            .alert.alert-warning.white
+              strong
+                | Budget Spendings
+          .row
+            .col-md-6
+              = react_component("GaugeElem", { idName: "planning_percentage_gauge", maxValue: budget_plan.total_income, actualValue: budget_plan.planned_amount })
+            .col-md-6
+              .panel
+                #accordion.accordion aria-multiselectable="true" role="tablist"
+                  - budget_plan.budget_spendings.each do |b_spending|
+                    = react_component("SpendingElem", { spending: b_spending, category: b_spending.category&.name })
+                    = tag.div id: "spending-collapse-#{b_spending.id}", class: "panel-collapse collapse gray", role: "tabpanel", "aria-labelledby": "spending-heading-#{b_spending.id}", "aria-expanded": "false", style: "height: 0px;" do
+                      .panel-body
+                        = form_for(b_spending, url: budget_plan_budget_spending_path(budget_plan, b_spending), method: :patch, html: {class: 'form-horizontal'}) do |spending_edit|
+                          .form-group
+                            label.control-label.col-md-2
+                              | Category
+                            .col-md-10
+                              = spending_edit.collection_select(:category_id, Category.all, :id, :name, {}, {class: 'form-control select2_single'})
+                          .form-group
+                            label.control-label.col-md-2
+                              | Amount                          
+                            .col-md-10
+                              = spending_edit.text_field :amount, step: 0.001, class: 'form-control', placeholder: '00.00 zł'
+                          .form-group
+                            .col-md-12
+                              = spending_edit.submit class: 'pull-right btn btn-success'                  
+                  = tag.a class:"panel-heading collapsed", role: "tab", id: "spending-heading-new", "data-toggle": "collapse", "data-parent": "#accordion", href: "#spending-collapse-new", "aria-expanded": "false", "aria-controls": "collapseOne", style: "margin-top: 20px" do
+                    h4 class="panel-title" 
+                      | Add spending
+                      .clearfix
+                  = tag.div id: "spending-collapse-new", class: "panel-collapse collapse", role: "tabpanel", "aria-labelledby": "spending-heading-new", "aria-expanded": "false", style: "height: 0px;" do
+                    .panel-body
+                      = form_for(BudgetSpending.new, url: budget_plan_budget_spendings_path(budget_plan), method: :post, html: {class: 'form-horizontal'}) do |b_spending|
+                        .form-group
+                          label.control-label.col-md-2
+                            | Category
+                          .col-md-10
+                            = b_spending.collection_select(:category_id, Category.all, :id, :name, {}, {class: 'form-control select2_single'})
+                        .form-group
+                          label.control-label.col-md-2
+                            | Amount                          
+                          .col-md-10
+                            = b_spending.text_field :amount, step: 0.01, class: 'form-control', placeholder: '00.00 zł'
+                        .form-group
+                          .col-md-12
+                            = b_spending.submit class: 'pull-right btn btn-success'
+          .row.mt-20
+          .row
+            .col-md-12 
+              .alert.alert-success.white
+                strong
+                  | Budget Incomes
+          .row.tile_count
+            .col-md-6
+              .tile_stats_count.text-center
+                span.count_top
+                  / i.fa.fa-money
+                  | Total Income
+                .count.blue
+                  | #{budget_plan.total_income} zł
+            .col-md-6
+              .panel
+                #accordion.accordion aria-multiselectable="true" role="tablist"
+                  - budget_plan.budget_incomes.each do |b_inc|
+                    = react_component("IncomeElem", { income: b_inc })
+                    = tag.div id: "income-collapse-#{b_inc.id}", class: "panel-collapse collapse gray", role: "tabpanel", "aria-labelledby": "income-heading-#{b_inc.id}", "aria-expanded": "false", style: "height: 0px;" do
+                      .panel-body
+                        = form_for(b_inc, url: budget_plan_budget_income_path(budget_plan, b_inc), method: :patch, html: {class: 'form-horizontal'}) do |income_edit|
+                          .form-group
+                            label.control-label.col-md-2
+                              | Description                          
+                            .col-md-10
+                              = income_edit.text_field :description, class: 'form-control'
+                          .form-group
+                            label.control-label.col-md-2
+                              | Amount                          
+                            .col-md-10
+                              = income_edit.text_field :amount, step: 0.01, class: 'form-control', placeholder: '00.00 zł'
+                          .form-group
+                            label.control-label.col-md-2
+                              | Carrier
+                            .col-md-10
+                              = income_edit.select :carrier, BudgetIncome.carrier_keys, {}, { class: 'form-control' }
+                          .form-group
+                            .col-md-12
+                              = income_edit.submit class: 'pull-right btn btn-success'
+                  = tag.a class:"panel-heading collapsed", role: "tab", id: "income-heading-new", "data-toggle": "collapse", "data-parent": "#accordion", href: "#income-collapse-new", "aria-expanded": "false", "aria-controls": "collapseOne", style: "margin-top: 20px" do
+                    h4 class="panel-title" 
+                      | Add income
+                      .clearfix
+                  = tag.div id: "income-collapse-new", class: "panel-collapse collapse", role: "tabpanel", "aria-labelledby": "income-heading-new", "aria-expanded": "false", style: "height: 0px;" do
+                    .panel-body
+                      = form_for(BudgetIncome.new, url: budget_plan_budget_incomes_path(budget_plan), method: :post, html: {class: 'form-horizontal'}) do |new_income|
+                        .form-group
+                          label.control-label.col-md-2
+                            | Description                          
+                          .col-md-10
+                            = new_income.text_field :description, class: 'form-control'
+                        .form-group
+                          label.control-label.col-md-2
+                            | Amount                          
+                          .col-md-10
+                            = new_income.text_field :amount, step: 0.01, class: 'form-control', placeholder: '00.00 zł'
+                        .form-group
+                          label.control-label.col-md-2
+                            | Carrier
+                          .col-md-10
+                            = new_income.select :carrier, BudgetIncome.carrier_keys, {}, { class: 'form-control' }
+                        .form-group
+                          .col-md-12
+                            = new_income.submit class: 'btn btn-success'                        
+
+                  /= form_for(BudgetSpending.new, url: budget_plan_budget_spendings_path(budget_plan), method: :post, html: {class: 'form-horizontal'}) do |b_spending|
+                    .form-group
+                      .col-md-6
+                        = b_spending.text_field :description
+                      .col-md-6
+                        = b_spending.collection_select :category_id, Category.all, :id, :name, {include_blank: "none"}, {class: 'form-control select2_single'}
+                    .form-group
+                      = b_spending.text_field :amount, step: 0.01, class: 'form-control' 
+                    .form-group
+                      .col-md-12
+                        = b_spending.submit class: 'btn btn-success'
+          /.col-md-6
+            .alert.alert-success
+              strong
+                | Budget Incomes
+            - budget_plan.budget_incomes.each do |b_inc|
+              .widget_summary
+                .w_left.w_20
+                  span
+                    = b_inc.carrier
+                .w_center.w_55
+                  .progress
+                    .progress-bar.bg-green[role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: #{budget_plan.income_percentage(b_inc)}%;"]
+                      span.sr-only
+                        | #{budget_plan.income_percentage(b_inc)}
+                .w_right.w_25
+                  span
+                    | #{b_inc.amount} zł
+            = form_for(BudgetIncome.new, url: budget_plan_budget_incomes_path(budget_plan), method: :post, html: {class: 'form-horizontal'}) do |b_inc|
+              .form-group
+                .col-md-12
+                  = b_inc.text_field :amount, step: 0.01
+              .form-group
+                .col-md-12
+                  = b_inc.select :carrier, BudgetIncome.carriers.keys.to_a
+              .form-group
+                .col-md-12
+                  = b_inc.submit class: 'btn btn-success'
+          /.col-md-6
+            .alert.alert-warning.white
+              strong
+                | Budget Spendings
+            - budget_plan.budget_spendings.each do |b_spending|
+              .widget_summary
+                .w_left.w_20
+                  span
+                    = b_spending.description
+                    = b_spending.category&.name
+                .w_center.w_55
+                  .progress
+                    .progress-bar.bg-red[role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: #{budget_plan.spending_percentage(b_spending)}%;"]
+                      span.sr-only
+                        | #{budget_plan.spending_percentage(b_spending)}
+                .w_right.w_25
+                  span
+                    | #{b_spending.amount} zł
+            = form_for(BudgetSpending.new, url: budget_plan_budget_spendings_path(budget_plan), method: :post, html: {class: 'form-horizontal'}) do |b_spending|
+              .form-group
+                .col-md-6
+                  = b_spending.text_field :description
+                .col-md-6
+                  = b_spending.collection_select :category_id, Category.all, :id, :name, {include_blank: "none"}, {class: 'form-control select2_single'}
+              .form-group
+                .col-md-12
+                  = b_spending.text_field :amount, step: 0.01, class: 'form-control'
+              .form-group
+                .col-md-12
+                  = b_spending.submit class: 'btn btn-success'

@@ -1,10 +1,13 @@
 class PaymentPart < ApplicationRecord
   belongs_to :category
   belongs_to :operation
+  belongs_to :budget_spending, optional: true
 
   scope :with_category, ->(category_id) { where('category_id = ?', category_id) }
   scope :outcomes, -> { where('amount < 0') }
   scope :incomes, -> { where('amount > 0') }
+  scope :current_year, -> { where('extract(year from month) = ?', Date.today.year) }
+  scope :current_month, -> { where('extract(month from month) = ?', Date.today.month) }
 
   def self.category_sum(category_id)
     PaymentPart.with_category(category_id)

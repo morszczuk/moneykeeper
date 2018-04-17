@@ -27,6 +27,10 @@ html
                       i.fa.fa-pie-chart
                       | Dashboard
                   li
+                    = link_to budget_plans_path do
+                      i.fa.fa-pencil-square-o
+                      | Budget Plan      
+                  li
                     = link_to operations_path do
                       i.fa.fa-credit-card
                       | Operations
@@ -34,6 +38,7 @@ html
                     = link_to categories_path do
                       i.fa.fa-bookmark-o
                       | Categories
+                      
             /! /sidebar menu
             /! /menu footer buttons
             .sidebar-footer.hidden-small

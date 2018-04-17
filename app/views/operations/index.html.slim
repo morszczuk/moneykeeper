@@ -3,6 +3,39 @@
     .x_panel
       .x_title
         h2 Wgrane transakcje
+        .pull-right
+          .panel
+            #accordion.accordion aria-multiselectable="true" role="tablist" 
+              = tag.a class:"panel-heading collapsed", role: "tab", id: "heading-operations-new", "data-toggle": "collapse", "data-parent": "#accordion", href: "#collapse-operations-new", "aria-expanded": "false", "aria-controls": "collapseOne" do
+                h4.panel-title
+                  span.glyphicon.glyphicon-plus aria-hidden="true"
+                  '
+                  | Wgraj transakcje
+              = tag.div id: "collapse-operations-new", class: "panel-collapse collapse", role: "tabpanel", "aria-labelledby": "heading-operations-new", "aria-expanded": "false", style: "height: 0px;" do
+                .panel-body
+                  = form_tag '/operation_history', multipart: true, class: 'form-horizontal'  do
+                    .form-group
+                      label.control-label.col-md-4
+                        | Operation history file                         
+                      .col-md-8.pull-right
+                        = file_field_tag "operation_history", class: 'btn btn-md btn-default pull-right'
+                    .form-group
+                      .col-md-12
+                        = submit_tag "Upload operation history", class: 'btn btn-md btn-success pull-right'                  
+                      /label for="operation_history"  Upload operation history
+                      /= file_field_tag "operation_history", class: 'btn btn-default'
+                      
+                  /= form_for(pp, url: payment_part_path(pp), method: :patch, html: {class: 'form-horizontal'}) do |pp_edit|
+                    .form-group
+                      .col-md-12
+                        = pp_edit.collection_select(:category_id, Category.all, :id, :name, {}, {class: 'form-control select2_single'})
+                    .form-group
+                      .col-md-12
+                        = pp_edit.text_field :labels, { class: 'form-control', placeholder: 'Labels' }
+                    .form-group
+                      .col-md-12
+                        = pp_edit.submit class: 'btn btn-success'
+              .clearfix
         .clearfix
       .x_content
         table.table.table-striped
@@ -35,16 +68,26 @@
                     .x_content
                       - operation.payment_parts.each do |pp|
                         .row
-                          .col.md-10
+                          .col-md-10
                             /! start accordion
                             .panel
                               #accordion.accordion aria-multiselectable="true" role="tablist" 
-                                = tag.a class:"panel-heading collapsed", role: "tab", id: "heading-#{pp.id}", "data-toggle": "collapse", "data-parent": "#accordion", href: "#collapse-#{pp.id}", "aria-expanded": "false", "aria-controls": "collapseOne" do
+                                a class="panel-heading collapsed" role="tab" id="heading-#{pp.id}" data-toggle="collapse" data-parent="#accordion" href="#collapse-#{pp.id}" aria-expanded="false" aria-controls="collapseOne"
                                   h4.panel-title
-                                    = pp.amount
-                                    = operation.currency
-                                    = pp.category.name
-                                = tag.div id: "collapse-#{pp.id}", class: "panel-collapse collapse", role: "tabpanel", "aria-labelledby": "heading-#{pp.id}", "aria-expanded": "false", style: "height: 0px;" do
+                                    .pull-left #{pp.amount} #{operation.currency} #{pp.category.name}
+                                    .pull-right
+                                      div class="btn-sm btn-danger" rel="nofollow" data-method="delete" href="#{operation_payment_part_path(operation, pp)}"
+                                        i.fa.fa-close
+                                    .clearfix
+                                /= tag :a, class:"panel-heading collapsed", role: "tab", id: "heading-#{pp.id}", "data-toggle": "collapse", "data-parent": "#accordion", href: "#collapse-#{pp.id}", "aria-expanded": "false", "aria-controls": "collapseOne" do
+                                  h4.panel-title
+                                    .pull-left
+                                      = "#{pp.amount} #{operation.currency} #{pp.category.name}"
+                                    .pull-right
+                                      = tag :a, class:"btn-sm btn-danger", rel: "nofollow", "data-method": "delete", href: "#{operation_payment_part_path(operation, pp)}" do
+                                        i.fa.fa-close
+                                    .clearfix
+                                /= tag :div, id: "collapse-#{pp.id}", class: "panel-collapse collapse", role: "tabpanel", "aria-labelledby": "heading-#{pp.id}", "aria-expanded": "false", style: "height: 0px;" do
                                   .panel-body
                                     = form_for(pp, url: payment_part_path(pp), method: :patch, html: {class: 'form-horizontal'}) do |pp_edit|
                                       .form-group
@@ -57,14 +100,15 @@
                                         .col-md-12
                                           = pp_edit.submit class: 'btn btn-success'
                             /! end of accordion
-                          .col.md-2
-                            = link_to operation_payment_part_path(operation, pp), { method: :delete , class: "btn btn-danger" } do
+                          .col-md-2
+                            = link_to operation_payment_part_path(operation, pp), { method: :delete , class: "btn-sm btn-danger" } do
                               i.fa.fa-close
                       .panel
                         #accordion.accordion aria-multiselectable="true" role="tablist" 
                           = tag.a class:"panel-heading collapsed", role: "tab", id: "heading-#{operation.id}-new", "data-toggle": "collapse", "data-parent": "#accordion", href: "#collapse-#{operation.id}-new", "aria-expanded": "false", "aria-controls": "collapseOne" do
                             h4.panel-title
-                              span.glyphicon.glyphicon-plus aria-hidden="true" 
+                              span.glyphicon.glyphicon-plus aria-hidden="true"
+                              '
                               | New part
                           = tag.div id: "collapse-#{operation.id}-new", class: "panel-collapse collapse", role: "tabpanel", "aria-labelledby": "heading-#{operation.id}-new", "aria-expanded": "false", style: "height: 0px;" do
                             .panel-body

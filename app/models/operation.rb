@@ -23,7 +23,7 @@ class Operation < ApplicationRecord
   end
 
   def self.category_sum(category_id, curr_month = true)
-    operations = Operation.all
+    operations = Operation.includes(:payment_parts).all
     operations = operations.current_month if curr_month
     operations.map { |op| op.parts_with_category(category_id) }
       .flatten

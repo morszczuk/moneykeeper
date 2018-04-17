@@ -1,6 +1,6 @@
 class DashboardController < ApplicationController
   def index
-    @operations = Operation.all
+    @operations = Operation.includes(:payment_parts).all
     @categories = Category.all
     @saldo = Operation.current_month_sum
   end

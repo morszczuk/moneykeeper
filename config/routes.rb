@@ -10,4 +10,8 @@ Rails.application.routes.draw do
   resources :label_filters, only: [:create, :destroy]
   post 'operation_history/parse', to: 'operation_history#parse'
   get 'delete_all_operations', to: 'operations#delete_all_operations'
+  resources :budget_plans, only: [:create, :index, :new] do
+    resources :budget_incomes, only: [:create, :destroy, :update]
+    resources :budget_spendings, only: [:create, :destroy, :update]
+  end
 end
