@@ -23,7 +23,7 @@ class BudgetPlan < ApplicationRecord
   end
 
   def planned_percentage
-    total_income == 0 ? 0 : (planned_amount/total_income)*100
+    total_income == 0 ? 0 : ((planned_amount/total_income)*100).round
   end
 
   def food_remaining_amount
